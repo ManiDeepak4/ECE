@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electronics Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { box-sizing: border-box; margin:0; padding:0; font-family: 'Poppins', sans-serif; }
+body { background: #fff; color: #333; display:flex; justify-content:center; }
+.app-container { width:420px; max-width:100%; position:relative; padding-bottom:80px; }
+
+/* Header */
+header { background: linear-gradient(90deg, #ff6a00, #ffcc00); color:white; display:flex; align-items:center; justify-content:center; padding:12px 15px; font-size:24px; font-weight:700; box-shadow:0 4px 8px rgba(0,0,0,0.2); position: sticky; top:0; z-index:40; border-bottom-left-radius:12px; border-bottom-right-radius:12px; }
+header i { position:absolute; left:15px; cursor:pointer; display:none; color:white; z-index:50; }
+.header-title { text-align:center; text-shadow:1px 1px 4px rgba(0,0,0,0.3); }
+
+/* Search bar */
+/* Search bar */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+  z-index: 20;
+}
+.search-bar input {
+  width: 90%;
+  padding: 8px 15px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Full-height search overlay inside app container */
+.search-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; /* full height */
+  background: #ffffff; /* plain white background */
+  display: none;
+  z-index: 60;
+  padding: 12px;
+  overflow-y: auto; /* scroll if content exceeds */
+  border-radius: 0; /* full rectangle */
+}
+
+/* Show overlay when active */
+.search-overlay.active {
+  display: block;
+}
+
+/* Overlay top bar */
+.search-overlay .search-top {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+  align-items: center;
+}
+.search-overlay input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+.search-overlay .close-search {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+}
+
+/* Recent searches */
+.search-history {
+  padding: 12px 0 0 0;
+}
+.search-history h4 {
+  margin-bottom: 8px;
+  color: #1565c0;
+}
+.search-history .history-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f4f7fb;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+
+/* Categories */
+.category-container { display:flex; overflow-x:auto; padding:8px 0 15px 8px; gap:8px; }
+.category-container::-webkit-scrollbar { height:5px; }
+.category-container::-webkit-scrollbar-thumb { background:#bbb; border-radius:3px; }
+.category-container::-webkit-scrollbar-track { background:#f1f1f1; }
+.category { min-width:70px; padding:8px 6px; background:#f4f7fb; border-radius:12px; text-align:center; flex-shrink:0; box-shadow:0 3px 6px rgba(0,0,0,0.1); cursor:pointer; transition: transform 0.3s, box-shadow 0.3s; }
+.category:hover { transform:translateY(-2px); box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+.category img { width:30px; height:30px; object-fit:contain; margin-bottom:4px; }
+.category h3 { font-size:10px; font-weight:600; color:#0077cc; }
+
+/* Items Grid */
+.item-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:12px; padding:0 10px 20px 10px; }
+.item { background:#f4f7fb; border-radius:12px; padding:8px; text-align:center; box-shadow:0 3px 8px rgba(0,0,0,0.1); cursor:pointer; position:relative; }
+.item img { width:100%; height:100px; object-fit:contain; border-radius:6px; }
+.item h3 { font-size:13px; margin:6px 0 3px; color:#1565c0; }
+
+/* Item Detail */
+#itemDetail { text-align:center; padding:12px; min-height:160px; }
+#itemDetail img { width:80%; max-width:300px; border-radius:8px; margin-bottom:10px; }
+#itemDetail h3 { font-size:18px; margin-bottom:6px; color:#1565c0; }
+#itemDetail p { font-size:14px; margin-bottom:6px; font-weight:500; }
+#itemDetail select { padding:6px 8px; margin-top:8px; border-radius:6px; border:1px solid #ccc; }
+#itemDetail .buy-btn, #itemDetail .cart-btn { margin:5px; padding:8px 12px; font-size:13px; border-radius:6px; border:none; cursor:pointer; }
+.buy-btn { background:#ff9800; color:white; }
+.cart-btn { background:#4caf50; color:white; }
+
+/* Delivery charges note */
+.delivery-note { font-size:13px; margin-bottom:8px; color:#444; font-weight:600; }
+
+/* Payment method buttons */
+.payment-methods { display:flex; justify-content:center; gap:10px; margin:10px 0; }
+.payment-methods button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
+.cod-btn { background:#1565c0; color:white; }
+.upi-btn { background:#ff9800; color:white; }
+
+/* Footer */
+footer { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:420px; max-width:100%; background:white; border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:10px 0; box-shadow:0 -2px 5px rgba(0,0,0,0.05); z-index:30; }
+footer button { background:none; border:none; font-size:13px; color:#0077cc; cursor:pointer; font-weight:600; position:relative; }
+footer button.active { color:#1565c0; font-weight:700; }
+footer button[data-count]:after { content: attr(data-count); position:absolute; top:-5px; right:-10px; background:red; color:white; font-size:10px; width:16px; height:16px; text-align:center; border-radius:50%; line-height:16px; }
+
+/* Sections */
+section { display:none; padding:0; }
+section.active { display:block; }
+
+/* Account buttons */
+.account-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; }
+.account-buttons button { padding:8px 15px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+.signin-btn { background:#1565c0; color:white; }
+.signup-btn { background:#ff9800; color:white; }
+
+/* Cart item */
+.cart-item { display:flex; gap:10px; margin-bottom:12px; padding:8px; border:1px solid #ddd; border-radius:6px; align-items:center; }
+.cart-item img { width:80px; height:80px; object-fit:contain; border-radius:4px; }
+.cart-item-details h4 { margin-bottom:4px; font-size:14px; color:#1565c0; }
+.cart-item-details p { font-size:13px; margin-bottom:2px; }
+.remove-btn { background:red; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer; margin-top:4px; font-size:12px; }
+.cart-total { text-align:right; padding:6px 12px; font-weight:700; font-size:16px; margin-bottom:12px; }
+input[type=text], input[type=email], input[type=password] { width:80%; padding:8px 10px; margin:6px 0; border-radius:6px; border:1px solid #ccc; }
+#accountForm button { background:#1565c0; color:white; padding:8px 12px; border:none; border-radius:6px; margin-top:8px; cursor:pointer; font-weight:600; }
+
+/* Orders list item */
+.order-item { padding:10px; border-radius:8px; background:#fafafa; margin-bottom:8px; cursor:pointer; border:1px solid #eee; }
+.order-item h4 { margin-bottom:6px; color:#1565c0; }
+.order-empty { color:#777; padding:12px; }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <header>
+    <i class="fas fa-arrow-left" id="backArrow" onclick="goBack()"></i>
+    <span class="header-title">Electronics Hub</span>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search components..." onkeyup="searchProducts()" onfocus="openFullSearch()" />
+  </div>
+
+  <!-- Full screen search overlay -->
+  <div id="searchOverlay" class="search-overlay" aria-hidden="true">
+    <div class="search-top">
+      <input id="overlaySearchInput" type="text" placeholder="Search components..." onkeyup="overlaySearch()" />
+      <div class="close-search" onclick="closeFullSearch()"><i class="fas fa-times"></i></div>
+    </div>
+    <div id="overlayResults" style="padding:12px;"></div>
+    <div class="search-history" id="searchHistoryContainer"></div>
+  </div>
+
+  <!-- Home Section -->
+  <section id="home" class="active">
+    <div class="category-container" id="categoryContainer"></div>
+    <div class="item-grid" id="homeItems"></div>
+  </section>
+
+  <!-- Items Section -->
+  <section id="items">
+    <h2 id="itemsTitle" style="padding:8px 12px;"></h2>
+    <div class="item-grid" id="itemGrid"></div>
+  </section>
+
+  <!-- Item Detail Section -->
+  <section id="itemDetail"></section>
+
+  <!-- Cart Section -->
+  <section id="cart">
+    <h2 style="padding:8px 12px;">Your Cart</h2>
+    <div id="cartItems" style="padding:0 12px;"></div>
+    <div class="cart-total" id="cartTotal"></div>
+  </section>
+
+  <!-- Orders Section -->
+  <section id="orders">
+    <h2 style="padding:8px 12px;">Previous Orders</h2>
+    <div id="ordersList" style="padding:0 12px;"></div>
+  </section>
+
+ <!-- Account Section -->
+<section id="account">
+  <!-- Buttons for Sign In / Sign Up -->
+  <div class="account-buttons">
+    <button class="signin-btn">Sign In</button>
+    <button class="signup-btn">Sign Up</button>
+  </div>
+
+  <!-- Address Section -->
+  <div class="address-section">
+    <h3>My Addresses</h3>
+    <div class="address-list">
+      <p id="no-address-msg">No address added yet.</p>
+    </div>
+
+    <!-- Add Address Button -->
+    <button class="add-address-btn" onclick="openAddressForm()">Add New Address</button>
+
+    <!-- Address Form (hidden by default) -->
+    <div id="address-form" style="display:none; margin-top:15px; border:1px solid #ccc; padding:12px; border-radius:8px; background:#fff;">
+      <input id="full-name" type="text" placeholder="Full Name" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+      <input id="street" type="text" placeholder="Street / Area" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+      <input id="city" type="text" placeholder="City" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+      <input id="state" type="text" placeholder="State" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+      <input id="pincode" type="text" placeholder="Pin Code" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+      <input id="phone" type="text" placeholder="Phone Number" style="width:100%; padding:8px; margin-bottom:8px; border-radius:6px; border:1px solid #ccc;">
+
+      <button onclick="saveAddress()" style="width:100%; padding:8px; border:none; border-radius:6px; background:#1565c0; color:white; cursor:pointer;">Save Address</button>
+      <button onclick="closeAddressForm()" style="width:100%; padding:8px; border:none; border-radius:6px; background:#ccc; color:#333; cursor:pointer; margin-top:5px;">Cancel</button>
+    </div>
+  </div>
+</section>
+
+<script>
+function openAddressForm() {
+  document.getElementById('address-form').style.display = 'block';
+}
+
+function closeAddressForm() {
+  document.getElementById('address-form').style.display = 'none';
+}
+
+function saveAddress() {
+  const fullName = document.getElementById('full-name').value;
+  const street = document.getElementById('street').value;
+  const city = document.getElementById('city').value;
+  const state = document.getElementById('state').value;
+  const pincode = document.getElementById('pincode').value;
+  const phone = document.getElementById('phone').value;
+
+  if(!fullName || !street || !city || !state || !pincode || !phone) {
+    alert('Please fill all fields');
+    return;
+  }
+
+  const addressList = document.querySelector('.address-list');
+  const noAddressMsg = document.getElementById('no-address-msg');
+  if(noAddressMsg) noAddressMsg.remove(); // remove "No address added yet"
+
+  // Create new address item
+  const addressItem = document.createElement('div');
+  addressItem.className = 'address-item';
+  addressItem.innerHTML = `
+    <p>${fullName}, ${street}, ${city}, ${state}, ${pincode} | ${phone}</p>
+    <div>
+      <button onclick="editAddress(this)" style="padding:5px 10px; border:none; border-radius:6px; background:#1565c0; color:white; cursor:pointer; margin-right:5px;">Edit</button>
+      <button onclick="removeAddress(this)" style="padding:5px 10px; border:none; border-radius:6px; background:#ff9800; color:white; cursor:pointer;">Remove</button>
+    </div>
+  `;
+  addressList.appendChild(addressItem);
+
+  // Clear form
+  document.getElementById('full-name').value = '';
+  document.getElementById('street').value = '';
+  document.getElementById('city').value = '';
+  document.getElementById('state').value = '';
+  document.getElementById('pincode').value = '';
+  document.getElementById('phone').value = '';
+
+  closeAddressForm();
+}
+
+function removeAddress(button) {
+  button.closest('.address-item').remove();
+  const addressList = document.querySelector('.address-list');
+  if(addressList.children.length === 0) {
+    addressList.innerHTML = '<p id="no-address-msg">No address added yet.</p>';
+  }
+}
+
+function editAddress(button) {
+  const addressItem = button.closest('.address-item');
+  const text = addressItem.querySelector('p').innerText.split('|')[0].trim();
+  const phone = addressItem.querySelector('p').innerText.split('|')[1].trim();
+
+  const parts = text.split(',');
+  document.getElementById('full-name').value = parts[0].trim();
+  document.getElementById('street').value = parts[1].trim();
+  document.getElementById('city').value = parts[2].trim();
+  document.getElementById('state').value = parts[3].trim();
+  document.getElementById('pincode').value = parts[4].trim();
+  document.getElementById('phone').value = phone;
+
+  addressItem.remove();
+  openAddressForm();
+}
+</script>
+
+<style>
+/* Account Buttons */
+.account-buttons { display:flex; justify-content:center; gap:10px; margin-top:20px; }
+.account-buttons button { padding:8px 15px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+
+/* Address Section */
+.address-section { margin:20px 10px; padding:15px; border:1px solid #ccc; border-radius:8px; background:#fff; }
+.address-section h3 { margin-bottom:12px; font-size:16px; color:#333; }
+.address-list p { margin-bottom:8px; color:#555; }
+.address-item { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:6px; background:#f4f7fb; margin-bottom:8px; }
+</style>
+
+  <!-- Help Section -->
+  <section id="help">
+    <h2 style="padding:8px 12px;">Customer Care</h2>
+    <p style="padding:0 12px;">For queries, contact us at support@electronicshub.com</p>
+  </section>
+
+  <footer>
+    <button onclick="navigate('orders')">Orders</button>
+    <button class="cart" onclick="navigate('cart')" data-count="0">Cart</button>
+    <button onclick="navigate('account')">Account</button>
+    <button onclick="navigate('help')">Help</button>
+  </footer>
+</div>
+
+<script>
+/* ---------------------
+  Minimal, focused changes only
+  - Adds Orders functionality
+  - Delivery charge display in itemDetail
+  - Cart -> Orders on purchase
+  - Account back behavior (from sign in/up back to account main)
+  - Full-screen search with history
+  All other code kept intact where possible.
+   --------------------- */
+
+/* ---------- New / supporting data ---------- */
+const DELIVERY_CHARGE = 50; // static delivery charge shown in item detail
+let orders = [];            // store placed orders
+let searchHistory = JSON.parse(localStorage.getItem('eh_searchHistory') || '[]'); // store search history
+
+/* ---------- Existing data (unchanged content) ---------- */
+// Categories and products (unchanged content copied from original)
+const categories = [
+  { name:'Sensors', key:'sensors', img:'https://m.media-amazon.com/images/I/71NvXRQrM5L.jpg' },
+  { name:'Robotics', key:'robotics', img:'https://www.nvenia.com/wp-content/uploads/2021/05/Robot-no-conveyors_2560x2560-1500x1500.jpg' },
+  { name:'Hardware', key:'hardware', img:'https://image.made-in-china.com/202f0j00QMEhrwYnvzup/Household-Tools-Package-Hardware-Set-Electric-Drill-Home-Electrician-Maintenance-Multi-Functional-Portable-Hardware-Tools-108PC.jpg' },
+  { name:'Microcontrollers', key:'microcontrollers',img:'https://www.elprocus.com/wp-content/uploads/Microcontrollers-Types.jpg'},
+  { name:'Modules', key:'modules', img:'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTuy-0WZ6Nv2q66rZ23hbU-_053NfRmfAzhPYymWd-bakITpIRJvSapP9oqT4Lrsoiebo26NxG0pZMutsm1t3sxmuD38p3fWYN5GQXnGoddAh-CoHzD44u6hw' },
+  { name:'Displays', key:'displays', img:'https://my.element14.com/productimages/large/en_GB/3769973-40.jpg' },
+  { name:'Power', key:'batteries', img:'https://www.enix-power-solutions.com/wp-content/uploads/2021/06/Lithium-ion-standard-Battery.jpg' }
+]; 
+categories.push(
+  { name:'Projects', key:'projects', img:'https://cdn11.bigcommerce.com/s-am5zt8xfow/images/stencil/1280x1280/products/1706/4146/apijsjkao__93747.1554993207.jpg?c=2' },
+  { name:'Restored Electronics', key:'restored', img:'https://tse4.mm.bing.net/th/id/OIP.wQvlDjVHaUOXQTxf7yjG5QHaLa?rs=1&pid=ImgDetMain&o=7&rm=3' }
+);
+
+
+const products = {
+  sensors:[
+    {name:"Ultrasonic Sensor", type:"HC-SR04", price:120, availability:"In Stock", desc:"Best Prices, Multi-Brand Ultrasonic Sensors HC-SR04-Ultrasonic Range Finder", img:"https://m.media-amazon.com/images/I/61V7-pm5ktL.jpg"},
+    {name:"IR Sensor", type:"IR-Module", price:80, availability:"In Stock", desc:"Best Prices, Multi-Brand IR Sensors for distance detection", img:"https://robu.in/wp-content/uploads/2016/01/IR-sensor-Module-2.jpg"},
+    {name:"DHT11 Temp Sensor", type:"DHT11", price:150, availability:"Out of Stock", desc:"Best Prices, Multi-Brand Temperature & Humidity Sensors", img:"https://m.media-amazon.com/images/I/41bTjJUcBuL.jpg"}
+  ],
+  robotics:[
+    {name:"BO Motor", type:"DC Motor", price:100, availability:"In Stock", desc:"High quality motors for robotics projects", img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS68f1-SsSdB3uxnFVm_5NBDzpcW3oBOSEgvA&s"},
+    {name:"Servo Motor", type:"SG90", price:250, availability:"In Stock", desc:"Best Servo Motor for precise robotics movements", img:"https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSPXaea5VZ2_pwhI57LCnVINLohnmpM9bKu9a8jtlObkfsyA1ak7h7D2tUyRmCsqWjnLhgWR6gcwjIULpnppTZUx1jE5g4mJb7kI_cXWLCQf0LLDE58anfI"}
+  ],
+  hardware:[
+    {name:"Breadboard", type:"MB-102", price:90, availability:"In Stock", desc:"Multi-purpose breadboard for electronics prototyping", img:"https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSUEdHCiHqvI5mSMNqYKHH2g-qY2ljbSqIj0Qn203Hk5WY4F4_SPhNdA3DD9iJIWXTWFIb33bavPHoNEP4NLhkU-j77ocXtoRqwESQhkmEi8CLS22oFPyl8Ow"},
+    {name:"Resistors Pack", type:"Various", price:50, availability:"In Stock", desc:"Assorted resistor pack for electronics projects", img:"https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRqN28n1Bb-Yn9jyRpbDgZAyxceYE5Rqrb10PIuYbpo_wbCx7dr-w3spniz6hdwz-YqlFxtwLjAyHs2NNCJdjB0ezAr_WbtSfmrzdX5TUpC"}
+  ],
+  microcontrollers:[
+    {name:"Arduino Uno", type:"ATmega328P", price:600, availability:"In Stock", desc:"Popular microcontroller board for prototyping", img:"https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcR4296IvdSETY2Pjk2OGXG0jAhOs8bEwOu4Q9aauXdvf_dwpNKff5i6Msdr2lAeWuUp-5SbV1lV3kLtOISeAKRj-iKQuSsRhXNfnJVuBRzKOSueFqLXG9vo6g"},
+    {name:"ESP32 Board", type:"WiFi+BLE", price:450, availability:"In Stock", desc:"Feature-rich ESP32 development board", img:"https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQKpLXQS6qKVYMCCNCgU5PiWP3W_lyBHPhYD8huzKvK72S2tVD3X74lYByMd2_TizXN1ssWOSwxNOZa6EVXU1TfNlsZQ4Fu33SO3n1f8-yrOWbbIWp7givu"}
+  ],
+  modules:[
+    {name:"Relay Module", type:"5V 1-Channel", price:150, availability:"In Stock", desc:"Reliable relay module for electronics control", img:"https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSeR5jWB5MzCziSj5y5ZTqbgKjGGf6kgEzhZXplY89iILHB0bp_kTsPK2V8wR9xG2-TNgTHDmIp2svZWdNEvJibFDSbwblEOw"},
+    {name:"Bluetooth Module", type:"HC-05", price:200, availability:"In Stock", desc:"Bluetooth communication module for wireless control", img:"https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQcrYIqL-DXlPOnNNPOAYmPb7YBxFqVUXoi07mp-CkCzqpo0U6WMsOtqKtAGIuJEBxvvLyuMs3zPPWpX88MPNr8msyIncQCfH3HGhmW9RErNFIj1S1WOOF2-ds"}
+  ],
+  displays:[
+    {name:"LCD 16x2", type:"HD44780", price:300, availability:"In Stock", desc:"16x2 Character LCD display for microcontroller projects", img:"https://soldered.com/productdata/2022/04/28481-Edit.jpg"}
+  ],
+  power:[
+    {name:"Batteries", type:"Alkaline", price:80, availability:"In Stock", desc:"Standard lithium ion batteries for electronics circuits", img:"https://cdn03.plentymarkets.com/i9a0e0hd8l6w/item/images/100732/full/22650-A-Lithium-Ionen-Akku-3-6V-3-7V-3000mAh.jpg"}
+  ]
+};
+
+let cart = [];
+let currentCategory = '';
+let lastViewedOrderIndex = null;
+
+/* ---------- Render categories & home items (unchanged) ---------- */
+const categoryContainer = document.getElementById('categoryContainer');
+categories.forEach(cat => {
+  const div = document.createElement('div');
+  div.classList.add('category');
+  div.innerHTML = `<img src="${cat.img}" alt="${cat.name}"><h3>${cat.name}</h3>`;
+  div.onclick = () => showCategory(cat.key);
+  categoryContainer.appendChild(div);
+});
+
+const homeItems = document.getElementById('homeItems');
+Object.values(products).flat().forEach(item => {
+  const div = document.createElement('div');
+  div.classList.add('item');
+  div.innerHTML = `<img src="${item.img}" alt="${item.name}"><h3>${item.name}</h3>`;
+  // allow quick buy from home: clicking image opens detail, long-click / hold could be added later
+  // Keep original behavior: open item detail on click
+  div.addEventListener('click', () => showItemDetail(item));
+  homeItems.appendChild(div);
+});
+
+/* ---------- Show category (unchanged) ---------- */
+function showCategory(category) {
+  currentCategory = category;
+  document.getElementById('backArrow').style.display = 'inline';
+  navigate('items');
+  document.getElementById('itemsTitle').innerText = category.toUpperCase();
+  const grid = document.getElementById('itemGrid');
+  grid.innerHTML = '';
+  products[category]?.forEach(item => {
+    const div = document.createElement('div');
+    div.classList.add('item');
+    div.innerHTML = `<img src="${item.img}" alt="${item.name}"><h3>${item.name}</h3>`;
+    div.addEventListener('click', () => showItemDetail(item));
+    grid.appendChild(div);
+  });
+}
+
+/* ---------- Show item detail (modified to include delivery charges above buttons) ---------- */
+function showItemDetail(item) {
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  const detailSection = document.getElementById('itemDetail');
+  // Add delivery charges line above Buy/Add buttons as requested
+  detailSection.innerHTML = `
+    <img src="${item.img}" alt="${item.name}">
+    <h3>${item.name}</h3>
+    <p>Type: ${item.type}</p>
+    <p>Price: ₹${item.price}</p>
+    <p>Availability: ${item.availability}</p>
+    <p>${item.desc}</p>
+    <div class="delivery-note">Delivery Charges: ₹${DELIVERY_CHARGE}</div>
+    <button class="buy-btn" onclick="showPaymentOptions('${item.name}', ${item.price}, '${item.img}')">Buy Now</button>
+    <button class="cart-btn" onclick="addToCart('${item.name}', ${item.price}, '${item.img}')">Add to Cart</button>
+    <div id="paymentOptions" class="payment-methods"></div>
+    <div style="margin-top:8px;">
+      <label>Quantity: </label>
+      <select id="quantitySelect">
+        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option>
+      </select>
+    </div>
+  `;
+  detailSection.classList.add('active');
+  document.getElementById('backArrow').style.display = 'inline';
+}
+
+/* ---------- Show payment options (modified to call placeOrder which will add to orders) ---------- */
+function showPaymentOptions(name, price, img) {
+  const container = document.getElementById('paymentOptions');
+  container.innerHTML = `
+    <button class="cod-btn" onclick="placeOrder('${name}', ${price}, 'Cash on Delivery', '${img}')">Cash on Delivery</button>
+    <button class="upi-btn" onclick="placeOrder('${name}', ${price}, 'UPI', '${img}')">Pay by UPI</button>
+  `;
+}
+
+/* ---------- Orders: placeOrder now adds to orders list (and removes from cart if present) ---------- */
+function placeOrder(name, price, method, img) {
+  const qty = parseInt(document.getElementById('quantitySelect')?.value) || 1;
+  // Add to orders array with delivery and total
+  const order = {
+    name, price, qty, img: img || (document.querySelector('#itemDetail img')?.src || ''),
+    method, delivery: DELIVERY_CHARGE, placedAt: new Date().toISOString()
+  };
+  orders.unshift(order); // newest first
+  // If this item exists in cart, remove first matching entry (reduce qty logic could be added)
+  const cartIndex = cart.findIndex(c => c.name === name);
+  if (cartIndex !== -1) {
+    // if qty in cart > qty ordered, reduce; else remove
+    if (cart[cartIndex].qty > qty) {
+      cart[cartIndex].qty -= qty;
+    } else {
+      cart.splice(cartIndex, 1);
+    }
+    updateCart();
+  }
+  updateOrdersUI();
+  document.getElementById('paymentOptions').innerHTML = '';
+  alert(`Order placed for ${name} (Qty: ${qty}) via ${method}. Delivery ₹${DELIVERY_CHARGE} added.`);
+}
+
+/* ---------- Add to cart (now accepts img) ---------- */
+function addToCart(name, price, img) {
+  const qty = parseInt(document.getElementById('quantitySelect')?.value) || 1;
+  const itemImg = img || document.querySelector('#itemDetail img')?.src || '';
+
+  // Check if item already exists in cart
+  const existingIndex = cart.findIndex(c => c.name === name);
+  if (existingIndex !== -1) {
+    // Increase quantity
+    cart[existingIndex].qty += qty;
+  } else {
+    // Add new item
+    cart.push({ name, price, qty, img: itemImg });
+  }
+
+  updateCart();
+  alert(`${name} added to cart! Quantity: ${qty}`);
+}
+
+
+/* ---------- Update cart (unchanged behaviour except ensures empty message) ---------- */
+function updateCart() {
+  const div = document.getElementById('cartItems');
+  const cartTotalDiv = document.getElementById('cartTotal');
+
+  if (cart.length === 0) {
+    div.innerHTML = '<p>Your cart is empty.</p>';
+    cartTotalDiv.innerHTML = '';
+  } else {
+    div.innerHTML = cart.map((c, index) => `
+      <div class="cart-item">
+        <input type="checkbox" class="selectItem" data-index="${index}">
+        <img src="${c.img}" alt="${c.name}" onclick="showCartItemDetail(${index})" style="cursor:pointer;">
+        <div class="cart-item-details" onclick="showCartItemDetail(${index})" style="cursor:pointer;">
+          <h4>${c.name}</h4>
+          <p>Price: ₹${c.price}</p>
+          <p>Quantity: ${c.qty}</p>
+          <button class="remove-btn" onclick="event.stopPropagation(); removeFromCart(${index})">Remove</button>
+        </div>
+      </div>
+    `).join('');
+
+    const total = cart.reduce((acc, c) => acc + c.price * c.qty, 0);
+    cartTotalDiv.innerHTML = `
+      Total: ₹${total}
+      <div style="text-align:right; margin-top:10px;">
+        <button onclick="buyAllItems()" style="background:#4caf50;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Buy All</button>
+        <button onclick="buySelectedItems()" style="background:#1565c0;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Buy Selected Items</button>
+      </div>
+    `;
+  }
+
+  document.querySelector('.cart').setAttribute('data-count', cart.length);
+}
+
+/* ---------- Remove from cart ---------- */
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  updateCart();
+}
+
+/* ---------- Buy all items: move to orders and clear cart ---------- */
+function buyAllItems() {
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  // Move each cart item to orders
+  cart.forEach(c => {
+    orders.unshift({
+      name: c.name, price: c.price, qty: c.qty, img: c.img,
+      method: 'Cart Purchase', delivery: DELIVERY_CHARGE, placedAt: new Date().toISOString()
+    });
+  });
+  cart = [];
+  updateCart();
+  updateOrdersUI();
+  alert("All items purchased successfully!");
+}
+
+/* ---------- Buy selected items: move selected items to orders ---------- */
+function buySelectedItems() {
+  const selected = [...document.querySelectorAll('.selectItem:checked')].map(cb => parseInt(cb.dataset.index));
+  if (selected.length === 0) {
+    alert("Please select items to buy!");
+    return;
+  }
+  // Use decreasing indices to remove safely
+  selected.sort((a,b)=>b-a).forEach(i => {
+    const c = cart[i];
+    orders.unshift({
+      name: c.name, price: c.price, qty: c.qty, img: c.img,
+      method: 'Cart Purchase', delivery: DELIVERY_CHARGE, placedAt: new Date().toISOString()
+    });
+    cart.splice(i, 1);
+  });
+  updateCart();
+  updateOrdersUI();
+  alert("Selected items purchased successfully!");
+}
+
+/* ---------- Orders UI ---------- */
+function updateOrdersUI() {
+  const list = document.getElementById('ordersList');
+
+  // Update Orders badge in footer
+  const ordersCount = orders.reduce((acc, o) => acc + o.qty, 0); // total quantity of items
+  document.querySelector('footer button:nth-child(1)').setAttribute('data-count', ordersCount);
+
+  if (!orders.length) {
+    list.innerHTML = '<div class="order-empty">No previous orders.</div>';
+    return;
+  }
+
+  // Render each order item with image, name, quantity, price, like in home/cart
+  list.innerHTML = orders.map((o, idx) => `
+    <div class="cart-item order-item" onclick="showOrderDetail(${idx})">
+      <img src="${o.img}" alt="${o.name}">
+      <div class="cart-item-details">
+        <h4>${o.name}</h4>
+        <p>Price: ₹${o.price}</p>
+        <p>Quantity: ${o.qty}</p>
+        <p>Payment: ${o.method}</p>
+        <p style="font-size:12px;color:#666;">Ordered on ${new Date(o.placedAt).toLocaleString()}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+
+
+/* ---------- Show order detail (clickable from Orders) ---------- */
+function showOrderDetail(orderIndex) {
+  const o = orders[orderIndex];
+  if (!o) return;
+  // Re-use itemDetail view to show order details
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  const detailSection = document.getElementById('itemDetail');
+  detailSection.innerHTML = `
+    <img src="${o.img}" alt="${o.name}">
+    <h3>${o.name}</h3>
+    <p>Price: ₹${o.price}</p>
+    <p>Quantity: ${o.qty}</p>
+    <p>Payment: ${o.method}</p>
+    <p>Delivery Charges: ₹${o.delivery}</p>
+    <p style="margin-top:8px;font-size:13px;color:#666;">Ordered on ${new Date(o.placedAt).toLocaleString()}</p>
+  `;
+  detailSection.classList.add('active');
+  document.getElementById('backArrow').style.display = 'inline';
+  lastViewedOrderIndex = orderIndex;
+}
+
+/* ---------- Show cart item detail (click from cart) ---------- */
+function showCartItemDetail(index) {
+  const c = cart[index];
+  if (!c) return;
+  // show in itemDetail including delivery note and buying options
+  showItemDetail({ name: c.name, type: '', price: c.price, availability: 'In Cart', desc: '', img: c.img });
+  // set quantity to match
+  const select = document.getElementById('quantitySelect');
+  if (select) select.value = c.qty;
+}
+
+/* ---------- Back button behavior: handle account form specially ---------- */
+let historyStack = ['home'];
+
+function navigate(page) {
+  document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  document.getElementById('backArrow').style.display = (page!=='home') ? 'inline' : 'none';
+  if (historyStack[historyStack.length - 1] !== page) {
+    historyStack.push(page);
+  }
+}
+
+function goBack() {
+  // 0) If search overlay open, close it first
+  const overlay = document.getElementById('searchOverlay');
+  if (overlay && overlay.classList.contains('active')) {
+    closeFullSearch();
+    return;
+  }
+
+  // 1) If payment options are visible inside itemDetail, hide them first
+  const paymentContainer = document.getElementById('paymentOptions');
+  if (paymentContainer && paymentContainer.innerHTML.trim() !== '') {
+    paymentContainer.innerHTML = '';
+    return;
+  }
+
+  // 1.5) If account form is visible, revert to account main screen instead of going home
+  const accountSection = document.getElementById('account');
+  if (accountSection && accountSection.querySelector('#accountForm')) {
+    // restore account main buttons
+    accountSection.innerHTML = `
+      <div class="account-buttons">
+        <button class="signin-btn">Sign In</button>
+        <button class="signup-btn">Sign Up</button>
+      </div>
+    `;
+    // re-bind click handlers
+    document.querySelector('.signin-btn').onclick = () => showAccountForm('signin');
+    document.querySelector('.signup-btn').onclick = () => showAccountForm('signup');
+    // keep view on account
+    navigate('account');
+    // don't pop further
+    return;
+  }
+
+  // 2) If itemDetail section is active, go back to items (or home if no category)
+  const itemDetail = document.getElementById('itemDetail');
+  const items = document.getElementById('items');
+  if (itemDetail.classList.contains('active')) {
+    if (typeof currentCategory !== 'undefined' && currentCategory) {
+      showCategory(currentCategory);
+    } else {
+      navigate('home');
+    }
+    return;
+  }
+
+  // 3) If items section is active, go back to home
+  if (items.classList.contains('active')) {
+    navigate('home');
+    return;
+  }
+
+  // 4) fallback: use history stack if possible
+  if (historyStack.length > 1) {
+    historyStack.pop(); // current
+    const prev = historyStack.pop() || 'home';
+    navigate(prev);
+    return;
+  }
+
+  // 5) Fallback: go to home
+  navigate('home');
+}
+
+/* ---------- Search (full-screen overlay with history) ---------- */
+function openFullSearch() {
+  const overlay = document.getElementById('searchOverlay');
+  const overlayInput = document.getElementById('overlaySearchInput');
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+  overlayInput.value = document.getElementById('search').value || '';
+  overlayInput.focus();
+  renderSearchHistory();
+}
+
+function closeFullSearch() {
+  const overlay = document.getElementById('searchOverlay');
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+function overlaySearch() {
+  const q = document.getElementById('overlaySearchInput').value.trim();
+  saveToSearchHistory(q);
+  performSearch(q, true); // show results inside overlay
+}
+
+/* Save search term only when non-empty and not duplicate recent */
+function saveToSearchHistory(q) {
+  if (!q) return;
+  // keep most recent first, unique
+  searchHistory = searchHistory.filter(s => s.toLowerCase() !== q.toLowerCase());
+  searchHistory.unshift(q);
+  // keep last 20
+  if (searchHistory.length > 20) searchHistory.length = 20;
+  localStorage.setItem('eh_searchHistory', JSON.stringify(searchHistory));
+  renderSearchHistory();
+}
+
+/* Render search history inside overlay */
+function renderSearchHistory() {
+  const container = document.getElementById('searchHistoryContainer');
+  if (!searchHistory.length) {
+    container.innerHTML = `<h4>Search History</h4><div class="history-item">No search history.</div>`;
+    return;
+  }
+  container.innerHTML = `<h4>Search History</h4>` + searchHistory.map(h => `<div class="history-item" onclick="onHistoryClick('${escapeHtml(h)}')">${h}</div>`).join('');
+}
+function onHistoryClick(term) {
+  const unescaped = unescapeHtml(term);
+  document.getElementById('overlaySearchInput').value = unescaped;
+  performSearch(unescaped, true);
+}
+
+/* Utility to escape/unescape history text for safe inline usage */
+function escapeHtml(s) {
+  return s.replace(/'/g,"\\'");
+}
+function unescapeHtml(s) {
+  return s.replace(/\\'/g,"'");
+}
+
+/* performSearch: if inOverlay true -> show in overlayResults; else show in items page (original behavior) */
+function performSearch(query, inOverlay = false) {
+  const q = (query || '').toLowerCase();
+  const results = Object.values(products).flat().filter(p => p.name.toLowerCase().includes(q));
+  if (inOverlay) {
+    const resultsDiv = document.getElementById('overlayResults');
+    if (!q) {
+      resultsDiv.innerHTML = `<div style="padding:12px;color:#777;">Type to search...</div>`;
+      return;
+    }
+    if (results.length === 0) {
+      resultsDiv.innerHTML = `<div style="padding:12px;color:#777;">No items found.</div>`;
+    } else {
+      resultsDiv.innerHTML = results.map(item => `
+        <div class="item" style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;" onclick="overlaySelectItem('${escapeHtml(item.name)}')">
+          <img src="${item.img}" style="width:60px;height:60px;object-fit:contain;border-radius:6px;">
+          <div style="flex:1;">
+            <div style="font-weight:700;color:#1565c0">${item.name}</div>
+            <div style="font-size:13px;color:#666">₹${item.price}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  } else {
+    // original searchProducts behavior (show results on items page)
+    navigate('items');
+    document.getElementById('itemsTitle').innerText = "Search Results";
+    const grid = document.getElementById('itemGrid');
+    grid.innerHTML = '';
+    const results2 = results;
+    if(results2.length===0) grid.innerHTML = `<p style="padding:12px;">No items found.</p>`;
+    results2.forEach(item=>{
+      const div = document.createElement('div');
+      div.classList.add('item');
+      div.innerHTML = `<img src="${item.img}" alt="${item.name}"><h3>${item.name}</h3>`;
+      div.addEventListener('click',()=>showItemDetail(item));
+      grid.appendChild(div);
+    });
+  }
+}
+
+/* Called when selecting an overlay result: close overlay and show item detail */
+function overlaySelectItem(escapedName) {
+  const name = unescapeHtml(escapedName);
+  closeFullSearch();
+  const item = Object.values(products).flat().find(p => p.name === name);
+  if (item) showItemDetail(item);
+}
+
+/* The original searchProducts is kept but now routes to performSearch on items page */
+function searchProducts() {
+  const query = document.getElementById('search').value.toLowerCase();
+  performSearch(query, false);
+}
+
+/* For overlay search on input: simply call performSearch */
+function overlaySearchKeypress(e) {
+  if (e.key === 'Enter') {
+    const q = document.getElementById('overlaySearchInput').value.trim();
+    saveToSearchHistory(q);
+    performSearch(q, true);
+  }
+}
+
+/* ---------- Account: showAccountForm and sign-in/up handling (modified only to keep back behavior) ---------- */
+document.querySelector('.signin-btn').onclick = () => showAccountForm('signin');
+document.querySelector('.signup-btn').onclick = () => showAccountForm('signup');
+
+function showAccountForm(type) {
+  navigate('account');
+  const accountSection = document.getElementById('account');
+  accountSection.innerHTML = `
+    <h2 style="text-align:center; margin-top:12px;">${type==='signin'?'Sign In':'Sign Up'}</h2>
+    <div id="accountForm" style="margin-top:20px; text-align:center;">
+      ${type==='signup'?'<input type="text" id="name" placeholder="Enter your name"><br>':''}
+      <input type="email" id="email" placeholder="Enter your email"><br>
+      <input type="password" id="password" placeholder="Enter your password"><br>
+      <button onclick="submitAccount('${type}')">${type==='signin'?'Sign In':'Sign Up'}</button>
+    </div>
+  `;
+}
+
+function submitAccount(type){
+  const name = document.getElementById('name')?.value || '';
+  const email = document.getElementById('email')?.value || '';
+  const password = document.getElementById('password')?.value || '';
+
+  if(type==='signup' && !name) { alert('Please enter your name'); return; }
+  if(!email || !password){ alert('Please fill all required fields'); return; }
+
+  alert(`${type==='signin'?'Signed in':'Account created'} successfully!`);
+  navigate('home');
+}
+
+/* ---------- Utility: showCartItemDetail already implemented above ---------- */
+
+/* ---------- Initialization: update orders UI and bind overlay input enter key ---------- */
+document.getElementById('overlaySearchInput').addEventListener('keypress', overlaySearchKeypress);
+updateOrdersUI();
+updateCart();
+renderSearchHistory();
+
+/* Helper to unescape html used earlier */
+function unescapeHtml(s) {
+  return s.replace(/\\'/g,"'");
+}
+</script>
+</body>
+</html>
